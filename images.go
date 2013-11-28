@@ -43,7 +43,8 @@ func encode(bin []byte) []byte {
 func get(url string) ([]byte, string) {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal("Error getting url.")
+		//Blank 1px x 1 px gif
+		return []byte("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="), "image/gif"
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -58,17 +59,10 @@ func get(url string) ([]byte, string) {
 	}
 
 	if url == DefaultImage() {
-		panic("Catching an infinite loop! Default Image doesn't exist or is broken. Please rectify!")
+		return []byte(""), ct
 	}
 
 	return get(DefaultImage())
-}
-
-// DEPRECATED
-// Begin a NewImage to fetch
-// TODO: Deprecate NewImage
-func NewImage(url string) string {
-	return FromRemote(url)
 }
 
 // FromRemote is a better named function that
