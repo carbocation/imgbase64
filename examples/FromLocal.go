@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/polds/imgbase64"
+
+	"github.com/carbocation/imgbase64"
 )
 
 // Open and convert a local file.

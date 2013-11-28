@@ -3,9 +3,10 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/polds/imgbase64"
 	"image/png"
 	"os"
+
+	"github.com/carbocation/imgbase64"
 )
 
 // Read from a bytes.Buffer.

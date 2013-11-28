@@ -13,7 +13,14 @@ import (
 
 // Default Image in case the requested image
 // does not exist.
-var df string = ""
+var (
+	df             string = ""
+	transparentGif []byte
+)
+
+func init() {
+	transparentGif, _ = base64.StdEncoding.DecodeString("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
+}
 
 // Get Default Image
 func DefaultImage() string {
@@ -44,7 +51,8 @@ func get(url string) ([]byte, string) {
 	resp, err := http.Get(url)
 	if err != nil {
 		//Blank 1px x 1 px gif
-		return []byte("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="), "image/gif"
+		log.Println("Error geting the url")
+		return transparentGif, "image/gif"
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -55,11 +63,13 @@ func get(url string) ([]byte, string) {
 	}
 
 	if DefaultImage() == "" {
-		return []byte(""), ct
+		log.Println("Default image is not set and error fetching remote")
+		return transparentGif, "image/gif"
 	}
 
 	if url == DefaultImage() {
-		return []byte(""), ct
+		log.Println("url was equal to the DefaultImage()")
+		return transparentGif, "image/gif"
 	}
 
 	return get(DefaultImage())
@@ -93,19 +103,25 @@ func FromLocal(fname string) string {
 	_, err := os.Stat(fname)
 	if err != nil {
 		if os.IsNotExist(err) {
-			panic("File does not exist")
+			log.Println("imgbase64: File does not exist")
 		}
-		panic("Error stating file")
+		log.Println("imgbase64: Error stat'ing file")
+		b.Read(transparentGif)
+		return FromBuffer(b)
 	}
 
 	file, err := os.Open(fname)
 	if err != nil {
-		panic("Error opening file")
+		log.Println("imgbase64: Error opening file")
+		b.Read(transparentGif)
+		return FromBuffer(b)
 	}
 
 	_, err = b.ReadFrom(file)
 	if err != nil {
-		panic("Error reading file to buffer")
+		log.Println("imgbase64: Error reading file to buffer")
+		b.Read(transparentGif)
+		return FromBuffer(b)
 	}
 
 	return FromBuffer(b)
